@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeIt</title>
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121420;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+
+        .container {
+            background-color: #1B2432;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            width: 100vw; 
+            height: 100vh; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 28px;
+            color: #ffffff;
+        }
+
+        p {
+            margin-bottom: 20px;
+            color: #cccccc;
+            font-size: 16px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            max-width: 400px; 
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #2c3a4d;
+            border-radius: 6px;
+            background-color: #2c3a4d;
+            color: #ffffff;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: #a0a0a0;
+        }
+
+        button {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            background-color: #3a4b5f;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background-color: #4b5f72;
+        }
+
+        textarea {
+            width: 100%;
+            max-width: 800px;
+            height: 320px;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #2c3a4d;
+            border-radius: 6px;
+            background-color: #2c3a4d;
+            color: #ffffff;
+            font-family: monospace;
+            font-size: 16px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .btn-group button {
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .back-btn {
+            background-color: #4a5568;
+        }
+
+        .back-btn:hover {
+            background-color: #5a677a;
+        }
+
+        #lockBtn {
+            background-color: #b54242;
+        }
+
+        #saveBtn {
+            background-color: #038e03;
+        }
+        #saveBtn:hover {
+            background-color: #38b137;
+        }
+
+        #lockBtn:hover {
+            background-color: #e24141;
+        }
+
+        .password-container {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .password-container label {
+            font-size: 14px;
+            color: #cccccc;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .password-container input {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                border-radius: 0;
+                height: auto;
+            }
+
+            textarea {
+                height: 250px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            p {
+                font-size: 14px;
+            }
+
+            textarea {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="app"></div>
+
+    <script>
+        let currentKey = null;
+        let isLocked = false; 
+
+        function accessCode() {
+            const key = document.getElementById("codeKey").value.trim();
+            if (!key) {
+                alert("Please enter a key!");
+                return;
+            }
+            currentKey = key;
+            fetchCode();
+        }
+
+        function loadHomePage() {
+            document.getElementById("app").innerHTML = `
+                <div class="container">
+                    <h1>CodeIt - Quick Code Storage</h1>
+                    <p>Enter your code key</p>
+                    <input type="text" id="codeKey" placeholder="Enter key">
+                    <button onclick="accessCode()">Access Code</button>
+                </div>
+            `;
+        }
+
+        function loadCodePage(code) {
+            document.getElementById("app").innerHTML = `
+                <div class="container">
+                    <h1>Your Stored Code</h1>
+                    <textarea id="codeDisplay">${code}</textarea>
+                    <div class="btn-group">
+                        <button id="saveBtn" onclick="saveCode()">Save</button>
+                        <button id="lockBtn" onclick="managePassword()">${isLocked ? "Change Password" : "Lock with Password"}</button>
+                    </div>
+                    <button onclick="loadHomePage()" class="back-btn">Back</button>
+                </div>
+            `;
+        }
+
+        async function fetchCode(password = null) {
+            const API_URL = "http://localhost:5000/fetch";
+
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ key: currentKey, password }),
+            });
+
+            const result = await response.json();
+
+            if (!result.success) {
+                if (result.message.includes("Code Locked")) {
+                    showPasswordInput();
+                } else {
+                    alert(result.message);
+                    loadHomePage();
+                }
+                return;
+            }
+
+            isLocked = result.is_locked; 
+            loadCodePage(result.code);   
+        }
+
+        function showPasswordInput() {
+            document.getElementById("app").innerHTML = `
+                <div class="container">
+                    <h1>Code Storage</h1>
+                    <p>This code is locked. Enter the password:</p>
+                    <input type="password" id="codePassword" placeholder="Enter password">
+                    <button onclick="attemptUnlock()">Unlock</button>
+                    <button onclick="loadHomePage()" class="back-btn">Back</button>
+                </div>
+            `;
+        }
+
+        async function attemptUnlock() {
+            const password = document.getElementById("codePassword").value.trim();
+            if (!password) {
+                alert("Please enter a password!");
+                return;
+            }
+            fetchCode(password);
+        }
+
+        async function saveCode() {
+            if (isLocked) {
+                alert("You cannot edit a locked code.");
+                return;
+            }
+
+            const API_URL = "http://localhost:5000/store";
+            const updatedCode = document.getElementById("codeDisplay").value;
+
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ key: currentKey, code: updatedCode }),
+            });
+
+            const result = await response.json();
+            alert(result.success ? "Code saved successfully!" : "Failed to save.");
+        }
+
+        async function managePassword() {
+            const API_URL = "http://localhost:5000/lock";
+            const newPassword = prompt(isLocked ? "Enter new password:" : "Enter a password to lock this code:");
+
+            if (!newPassword) {
+                alert("You must enter a password.");
+                return;
+            }
+
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ key: currentKey, password: newPassword }),
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert(isLocked ? "Password changed successfully!" : "Code locked successfully!");
+                isLocked = true;
+                loadCodePage(document.getElementById("codeDisplay").value); 
+            } else {
+                alert("Failed to update password.");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadHomePage);
+    </script>
+
+</body>
+</html>
