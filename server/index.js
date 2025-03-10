@@ -9,11 +9,17 @@ dotenv.config();
 const app = express();
 
 // CORS Configuration
+// const corsOptions = {
+//     origin: ['http://localhost:5173'],
+//     methods: ['GET', 'POST', 'OPTIONS'],
+//     allowedHeaders: ['Content-Type', 'Authorization'],
+//     credentials: true 
+// };
 const corsOptions = {
-    origin: ['http://localhost:5173', 'https://code-it-live.vercel.app'], // Add your frontend URL here
+    origin: ['https://code-it-live.vercel.app', 'https://code-it-liard-ten.vercel.app',],
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true // Allow credentials if needed
+    credentials: true 
 };
 
 app.use(cors(corsOptions));
