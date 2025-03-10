@@ -1,7 +1,7 @@
-# CodeIt - Secure Code Storage
+# CodeIt - Quick Code Storage
 
 ## Overview
-CodeIt is a web application that allows users to securely store and retrieve code snippets using a unique key. Users can access their code from anywhere by entering the key, with optional password protection for enhanced security.
+CodeIt is a web application that allows users to qucikly and securely store and retrieve code snippets using a unique key. Users can access their code from anywhere by entering the key, with optional password protection for enhanced security.
 
 ## Features
 - Store code snippets with a unique key.
