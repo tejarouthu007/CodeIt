@@ -19,6 +19,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Handle Preflight Requests
+app.options('*', cors(corsOptions));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
