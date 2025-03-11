@@ -82,7 +82,6 @@ async function fetchCode(password = null) {
 
     isLocked = result.is_locked;
     loadCodePage(result.code);
-    document.getElementById("status").innerHTML= "Your Code Key has been used before!";
 }
 
 async function createNewEntry() {
