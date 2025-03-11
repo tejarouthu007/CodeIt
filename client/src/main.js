@@ -127,15 +127,15 @@ async function saveCode() {
 
 async function managePassword() {
     const button = document.getElementById("lockBtn");
-
-    const newPassword = prompt(isLocked ? "Enter new password:" : "Enter a password to lock this code:");
+    const wasLocked = isLocked; 
+    const newPassword = prompt(wasLocked ? "Enter new password:" : "Enter a password to lock this code:");
 
     if (!newPassword) {
         alert("You must enter a password.");
         return;
     }
 
-    button.disabled = false;
+    button.disabled = true;
     button.innerHTML = `<span class="spinner"></span> Processing..`;
 
     const response = await fetch(`${API_URL}/lock`, {
@@ -144,28 +144,24 @@ async function managePassword() {
         body: JSON.stringify({ key: currentKey, password: newPassword }),
     });
 
-    const result = await response.json();
+    if (response.ok) {
+        const result = await response.json();
 
-    if (result.success) {
-        button.innerHTML = "Change Password";
-
-        requestAnimationFrame(() => {
-            setTimeout(()=> {
-                alert(isLocked ? "Password changed successfully!" : "Code locked successfully!");
-                isLocked = true;
-            },0);
-        });
-
-        
-        loadCodePage(document.getElementById("codeDisplay").value);
-    } else {
-        alert("Failed to update password.");
+        if (result.success) {
+            isLocked = true;
+            button.innerHTML = "Change Password";
+            alert(wasLocked ? "Password changed successfully!" : "Code locked successfully!");
+            loadCodePage(document.getElementById("codeDisplay").value);
+            button.disabled = false;
+            return;
+        }
     }
-    button.innerHTML = isLocked ? "Change Password" : "Lock with Password";
 
+    button.innerHTML = wasLocked ? "Change Password" : "Lock with Password";
+    alert("Failed to update password.");
     button.disabled = false;
-    
 }
+
 
 function showPasswordInput() {
     document.getElementById("app").innerHTML = `
