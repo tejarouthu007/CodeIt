@@ -27,10 +27,10 @@ function loadHomePage() {
     document.getElementById("app").innerHTML = `
         <div class="container">
             <h1>CodeIt - Quick Notes Storage</h1>
-            <div>
+            <form id="submit1">
                 <p>Enter your code key</p>
                 <input type="text" id="codeKey" placeholder="Enter key">
-                <button id="accessBtn">Access Code</button>
+                <button type="submit" id="accessBtn">Access Code</button>
             </div>
         </div>
         <footer>Several code keys might be used already, if you want to create new notes try a unique key such as <span class="blue">hellotheremaytheforcebewithyou7272</span></footer>
@@ -150,7 +150,11 @@ async function managePassword() {
         if (result.success) {
             isLocked = true;
             button.innerHTML = "Change Password";
-            alert(wasLocked ? "Password changed successfully!" : "Code locked successfully!");
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    alert(wasLocked ? "Password changed successfully!" : "Code locked successfully!");
+                }, 0);
+            });
             loadCodePage(document.getElementById("codeDisplay").value);
             button.disabled = false;
             return;
@@ -168,11 +172,11 @@ function showPasswordInput() {
         <div class="container">
             <h1>CodeIt - Quick Code Storage</h1>
             <p>This code is locked. Enter the password:</p>
-            <div>
+            <form id="submit2">
                 <input type="password" id="codePassword" placeholder="Enter password">
-                <button id="unlockBtn">Unlock</button>
+                <button type="submit" id="unlockBtn">Unlock</button>
                 <button id="backBtn" class="back-btn">Go Back</button>
-            </div>
+            </form>
         </div>
     `;
 
