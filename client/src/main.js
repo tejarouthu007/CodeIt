@@ -159,9 +159,9 @@ async function managePassword() {
         
         loadCodePage(document.getElementById("codeDisplay").value);
     } else {
-        button.innerHTML = isLocked ? "Change Password" : "Lock with Password";
         alert("Failed to update password.");
     }
+    button.innerHTML = isLocked ? "Change Password" : "Lock with Password";
 
     button.disabled = false;
     
