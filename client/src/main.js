@@ -43,7 +43,7 @@ function loadHomePage() {
 function loadCodePage(code) {
     document.getElementById("app").innerHTML = `
         <div class="code-container">
-            <h1>Your Stored Code</h1>
+            <h1 id="status">Your Stored Code</h1>
             <textarea id="codeDisplay">${code}</textarea>
             <div class="btn-group">
                 <button id="saveBtn">Save</button>
@@ -82,6 +82,7 @@ async function fetchCode(password = null) {
 
     isLocked = result.is_locked;
     loadCodePage(result.code);
+    document.getElementById("status").innerHTML= "Your Code Key has been used before!";
 }
 
 async function createNewEntry() {
@@ -94,6 +95,7 @@ async function createNewEntry() {
     const result = await response.json();
     if (result.success) {
         loadCodePage("");
+        document.getElementById("status").innerHTML =  "Your Code Key has never been used before!";
     } else {
         alert("Failed to create new code entry.");
         loadHomePage();
