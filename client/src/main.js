@@ -152,10 +152,11 @@ async function managePassword() {
         requestAnimationFrame(() => {
             setTimeout(()=> {
                 alert(isLocked ? "Password changed successfully!" : "Code locked successfully!");
-            },0)
+                isLocked = true;
+            },0);
         });
 
-        isLocked = true;
+        
         loadCodePage(document.getElementById("codeDisplay").value);
     } else {
         button.innerHTML = isLocked ? "Change Password" : "Lock with Password";
