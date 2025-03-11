@@ -35,7 +35,7 @@ function loadHomePage() {
         </div>
         <footer>Several code keys might be used already, if you want to create new notes try a unique key such as <span class="blue">hellotheremaytheforcebewithyou7272</span></footer>
     `;
-
+    isLocked = false;
     // Attach event listener dynamically
     document.getElementById("accessBtn").addEventListener("click", accessCode);
 }
