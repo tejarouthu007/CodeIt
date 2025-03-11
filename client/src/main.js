@@ -4,13 +4,23 @@ let currentKey = null;
 let isLocked = false;
 
 function accessCode() {
+    const button = document.getElementById("accessBtn");
     const key = document.getElementById("codeKey").value.trim();
+
     if (!key) {
         alert("Please enter a key!");
         return;
     }
+
+    button.disabled = true;
+    button.innerHTML = `<span class="spinner"></span> Loading...`;
+
     currentKey = key;
-    fetchCode();
+
+    fetchCode().finally(() => {
+        button.disabled = false;
+        button.innerHTML = "Access Code";
+    });
 }
 
 function loadHomePage() {
