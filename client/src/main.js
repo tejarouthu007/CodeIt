@@ -101,7 +101,11 @@ async function createNewEntry() {
 }
 
 async function saveCode() {
+    const button = document.getElementById("saveBtn");
     const updatedCode = document.getElementById("codeDisplay").value;
+
+    button.disabled = true;
+    button.innerHTML = `<span class="spinner"></span> Saving...`;
 
     const response = await fetch(`${API_URL}/store`, {
         method: "POST",
@@ -109,17 +113,30 @@ async function saveCode() {
         body: JSON.stringify({ key: currentKey, code: updatedCode }),
     });
 
+    button.innerHTML = "Save";
+    
     const result = await response.json();
-    alert(result.success ? "Code saved successfully!" : "Failed to save.");
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            alert(result.success ? "Code saved successfully!" : "Failed to save.");
+        }, 0);
+    });
+    
+    button.disabled = false;
 }
 
 async function managePassword() {
+    const button = document.getElementById("lockBtn");
+
     const newPassword = prompt(isLocked ? "Enter new password:" : "Enter a password to lock this code:");
 
     if (!newPassword) {
         alert("You must enter a password.");
         return;
     }
+
+    button.disabled = false;
+    button.innerHTML = `<span class="spinner"></span> Processing..`;
 
     const response = await fetch(`${API_URL}/lock`, {
         method: "POST",
@@ -128,13 +145,25 @@ async function managePassword() {
     });
 
     const result = await response.json();
+
     if (result.success) {
-        alert(isLocked ? "Password changed successfully!" : "Code locked successfully!");
+        button.innerHTML = "Change Password";
+
+        requestAnimationFrame(() => {
+            setTimeout(()=> {
+                alert(isLocked ? "Password changed successfully!" : "Code locked successfully!");
+            },0)
+        });
+
         isLocked = true;
         loadCodePage(document.getElementById("codeDisplay").value);
     } else {
+        button.innerHTML = isLocked ? "Change Password" : "Lock with Password";
         alert("Failed to update password.");
     }
+
+    button.disabled = false;
+    
 }
 
 function showPasswordInput() {
@@ -155,12 +184,19 @@ function showPasswordInput() {
 }
 
 async function attemptUnlock() {
+    const button = document.getElementById("unlockBtn");
     const password = document.getElementById("codePassword").value.trim();
     if (!password) {
         alert("Please enter a password!");
         return;
     }
-    fetchCode(password);
+
+    button.disabled = true;
+    button.innerHTML = `<span class="spinner"></span> Unlocking...`
+    fetchCode(password).finally(() => {
+        button.disabled = false;
+        button.innerHTML = "Unlock";
+    });
 }
 
 // Ensure home page loads when the page is first loaded
