@@ -38,6 +38,8 @@ function loadHomePage() {
     isLocked = false;
     // Attach event listener dynamically
     document.getElementById("accessBtn").addEventListener("click", accessCode);
+    document.querySelector("header a").innerHTML = "About";
+    document.querySelector("header a").setAttribute("href", "#about");
 }
 
 function loadCodePage(code) {
@@ -202,4 +204,38 @@ async function attemptUnlock() {
 }
 
 // Ensure home page loads when the page is first loaded
-document.addEventListener("DOMContentLoaded", loadHomePage);
+document.addEventListener("DOMContentLoaded", () => {
+    const app = document.getElementById("app");
+
+    function loadAboutPage() {
+        app.innerHTML = `
+            <section class="about-container">
+                <div> <h1>About CodeIt</h1>
+                <p>CodeIt is a simple code storage SPA that allows you to store code with a unique key and retrieve it from anywhere, with optional password protection.</p> </div>
+                <button id="homeBtn">Go to Home</button>
+            </section>
+        `;
+        document.getElementById("homeBtn").addEventListener("click", loadHomePage);
+        document.querySelector("header a").innerHTML = "Home";
+        document.querySelector("header a").setAttribute("href", "#home");
+    }
+
+    function handleNavigation(event) {
+        event.preventDefault();
+        if (event.target.getAttribute("href") === "#about") {
+            loadAboutPage();
+        } 
+        else {
+            loadHomePage();
+        }
+    }
+
+    document.querySelector("header a").addEventListener("click", handleNavigation);
+
+    if (window.location.hash === "#about") {
+        loadAboutPage();
+    } 
+    else {
+        loadHomePage();
+    }
+});
